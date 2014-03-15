@@ -19,6 +19,15 @@ import imagemagick
 import gpio_handler
 import ink_levels
 
+
+'''******************************************
+booth.py 
+
+-Main python program that hooks everything together
+
+
+******************************************'''
+
 thread_ink_levels = threading.Thread(target=ink_levels.checkInkLevelThread, args=[])
 print("Starting ink level checking thread...")
 thread_ink_levels.start()

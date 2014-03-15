@@ -1,6 +1,18 @@
 import pygame
 import os
 
+'''******************************************
+my_globals.py 
+
+-Global Variables for use throughout entire program
+	-directories for use in program
+	-Screen dimensions
+
+-Initializes pygame window
+
+
+******************************************'''
+
 
 #directory for photo booth images
 PBOOTH_DIR = "/home/pi/photobooth/images/"

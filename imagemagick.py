@@ -3,8 +3,19 @@ import random
 import threading
 import time
 
-
 import my_globals
+
+
+'''******************************************
+imagemagick.py 
+
+-python script to handle all imagemagick commands
+
+-resizes/crops pictures
+-creates final picture to be printed
+
+
+******************************************'''
 
 #root directory for photos
 #dirPrefix = "/home/pi/python/photos/"

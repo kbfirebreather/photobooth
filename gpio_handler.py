@@ -5,6 +5,22 @@ import time
 import threading
 
 
+
+'''******************************************
+gpio_handler.py 
+
+-Handles all GPIO Events
+
+-Checks for when button is pressed so photobooth can work it's magic
+
+-Handles countdown timer through GPIO pins
+
+
+******************************************'''
+
+
+
+
 def exit():
 	GPIO.cleanup()
 

@@ -7,6 +7,17 @@ import my_globals
 import imagemagick
 
 
+'''******************************************
+display.py 
+
+-Handles all video output
+-Displays messages to user
+-Displays final product to user
+
+
+******************************************'''
+
+
 def clearWindow():
 	my_globals.content_window.fill((255,255,255))
 	#my_globals.content_window.fill((0,0,0))

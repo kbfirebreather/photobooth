@@ -6,6 +6,16 @@ import time
 import subprocess #for command line
 import os
 
+
+'''******************************************
+ink_levels.py 
+
+-script that continually checks ink levels of the printer
+-Notifies users when any of the ink levels reach < 25%
+
+
+******************************************'''
+
 #variable main thread will change to TRUE if ink_levels thread is supposed to stop and exit
 killThread = False
 
