@@ -47,7 +47,6 @@ ink_level_file_path = "./inklevels.txt"
 black = re.compile("Black:")
 color = re.compile("Color:")
 photo = re.compile("Black, Cyan, Magenta:")
-
 noaccess = re.compile("Could not access")
 
 def saveInkLevels():
@@ -62,7 +61,7 @@ def notifyUsers(ink_black, ink_color, ink_photo):
 	msg = "Low on ink. Current Levels: \nBlack(#56): " + str(ink_black) + "%\n" + "Color(#57): " + str(ink_color) + "%\n" + "Photo(#58): " + str(ink_photo) + "%"
 
 	#generate complete message including from/to/subject headers
-	message = """From: Photobooth <booth@photobooth.com>
+	message = """From: Photobooth <noreply@photobooth.com>
 	To: VIPS
 	Subject: Photobooth Ink Level Notification
 
@@ -157,6 +156,8 @@ def checkInkLevelThread():
 
 
 '''
+#used to test ink_levels.py standalone instead of integrated
+
 saveInkLevels()
 checkInkLevel()
 sys.exit(0)
