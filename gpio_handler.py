@@ -62,7 +62,7 @@ def isButtonPressed():
 def setGPIO(gpio, state):
 	GPIO.output(gpio, state)
 
-#while(True):
+#function to display countdown to LED
 def displayCountdown():
 	#wait 0.6 seconds before displaying countdown as that's how long it takes to prep camera
 	time.sleep(.65)
@@ -110,23 +110,9 @@ def displayCountdown():
 	setGPIO(24, False)
 	setGPIO(25, False)
 
-	'''
-	print("Setting GPIO 25 output HI")
-	setGPIO(25, True)
-	time.sleep(3)
-	print("Setting GPIO 25 output LO")
-	setGPIO(25, False)
-	time.sleep(3)
-	'''
-
+#function called from booth.py to execute countdown in a thread
 def countdownThread():
+	#create thread for displayCountdown
 	t1 = threading.Thread(target=displayCountdown, args=[])
+	#execute thread
 	t1.start()
-
-'''
-print("executing thread")
-
-while(True):
-	print("looping out of thread...")
-	time.sleep(0.1)
-'''
