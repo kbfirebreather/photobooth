@@ -46,17 +46,11 @@ GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 #return TRUE if pressed
 #return FALSE if not pressed
 def isButtonPressed():
-	#if pressed, return true
-	#else
-	#return false
+	#wait for falling edge on GPIO 
 	print("Waiting for falling edge")
 	GPIO.wait_for_edge(17, GPIO.FALLING)
-	print("edge fell")
+	print("Falling edge detected, returning true")
 	return True
-	#return True
-	#while True:
-		#print(GPIO.input(17))
-	#return GPIO.input(17) == 0
 
 #quick function for setting GPIO state
 def setGPIO(gpio, state):
