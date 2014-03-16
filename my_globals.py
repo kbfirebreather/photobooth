@@ -12,6 +12,7 @@ my_globals.py
 
 import pygame
 import os
+import sys
 
 #directory for photo booth images
 PBOOTH_DIR = "/home/pi/photobooth/images/"
@@ -32,6 +33,8 @@ screenHeight = screenInfo.current_h
 screenPosX = int((screenWidth - screenHeight) / 2)
 screenWidth = screenHeight
 
+#starting number for pictures taken by camera
+STARTING_PIC_NUM = "1"
 
 
 def initWindow(width = int(screenWidth), height = int(screenHeight)):
@@ -58,3 +61,17 @@ print("Availble content height: " + str(content_height))
 
 #backround color for content window
 currentBgColor = (255, 255, 255)
+
+
+
+#determine if pictures have been taken previously so we can update starting picture number
+#check all the image files in the image file directory
+#this is for determining where to start picture numbering so we don't overwrite pictures already taken
+#put all files from PBOOTH_DIR into img_files list
+img_files = os.listdir(PBOOTH_DIR)
+#update STARTING_PIC_NUM to number of files in directory + 1 if files exist in directory
+#if no files exist, then the STARTING_PIC_NUM will stay at default of "1"
+if(len(img_files) > 0):
+	STARTING_PIC_NUM = str(len(img_files) + 1)
+
+sys.exit(0)
