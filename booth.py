@@ -28,10 +28,13 @@ booth.py
 
 ******************************************'''
 
+#create thread for checking ink levels
 thread_ink_levels = threading.Thread(target=ink_levels.checkInkLevelThread, args=[])
 print("Starting ink level checking thread...")
+#start ink level checking thread
 thread_ink_levels.start()
 
+#setup signal handler to catch ctrl+c detection and exit cleanly
 def signal_handler(signal, frame):
 	print("Ctrl+C detected...")
 	print("Cleaning up GPIO...")
@@ -45,8 +48,9 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 
+#check all the image files in the image file directory
+#this is for determining where to start picture numbering so we don't overwrite pictures already taken
 img_files = []
-
 os.chdir(my_globals.PBOOTH_DIR)
 for files in os.listdir("."):
 	if(file == "out.jpg" or files == "complete.jpg" or files == "bottom_300dpi.jpg"):
@@ -93,27 +97,17 @@ if(num_pics > 0):
 
 '''
 
-
+#function to send picture to printer
 def printPicture(number):
 	file = "/home/pi/photobooth/sets/complete_" + number + ".jpg"
 	command = "lpr " + file
 	imagemagick.cmd_line(command)
 
 
-#sys.exit(0)
-#print(img_files)
-#sys.exit(0)
-
 #determine starting file number to use
 #check amount of pictures already taken
 #increment by 1
 if(len(img_files) > 0):
-	''' -- this is old code, probably not necessary anymore
-	finalfile = img_files[len(img_files) - 1]
-	replaced = re.sub('photobooth2_|thumb_photobooth2_|.jpg', '', finalfile)
-	replaced = str((int(replaced) + 1))
-	STARTING_NUM = replaced
-	'''
 	#pictures exist, starting number is num_pics+1
 	STARTING_NUM = str(len(img_files) + 1)
 else:
@@ -121,35 +115,27 @@ else:
 	STARTING_NUM = "1"
 
 
-#print("STARTINGNUM: " + str(STARTING_NUM))
-#gpio_handler.exit()
-#sys.exit(0)
-
-
+#function to ask user to press button to begin
+#should this be moved to display.py?
 def displayRequestButtonWindow():
 	#request button window text string
 	theText = "Press button to begin photo shoot!"
 	display.displayContentText(theText, True)
 
 
-#Take photo and save to @filename
+#function Take photo and save to @filename
 def takePhoto(filename):
+	#append filename to global photobooth image directory
 	filename = my_globals.PBOOTH_DIR + filename
-	cmdline = "raspistill -w 600 -h 600 -fp -op 125 -t 3000 -o " + filename
-	#cmdline = "raspistill -w 600 -h 600 -f -p <0, 0, 640, 680> -t 3000 -o " + filename
-	cmdline = "raspistill -fp -op 200 -t 3000 -o " + filename
-	#cmdline = "raspistill -fp -w 1000 -h 1000 -t 3000 -o " + filename
-	
+	#command line instruction to take picture with camera after 3 seconds
 	cmdline = "raspistill -fp -t 3000 -o " + filename
-	
-	#cmdline = "picture" + filename
-	#print("cmd: " + cmdline)
-	#take photo
+	#send command to command line
 	os.system(cmdline)
 
 
 
 #use image magick to create photobooth picture to print out
+#should this me moved to imagemagick.py?
 def makePhotoBoothPicture(startingPictureNumber, filenames, filethumbs, convert_threads):
 
 	#images = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg']
@@ -160,25 +146,28 @@ def makePhotoBoothPicture(startingPictureNumber, filenames, filethumbs, convert_
 
 
 #user pressed button so now we'll go through entire photo booth sequence
+#function that runs after user presses button to run photobooth sequence
 def runPhotoBooth():
 	#clear content space to work wirth
 	display.clearWindow()
 
-	start_time = time.time()
-
 	#need this global declaration or else references won't work right
 	global STARTING_NUM
-	#need name of photo set
-	name = "photobooth2"
+	#need name of photo set that dictates beginning of photo filenames
+	name = "photobooth"
+
 	#starting number for photo set
 	pic_num = 1
+	#inform user that the system will take 4 pictures
 	display.displayMessage("The system will now take 4 consecutive pictures.")
+	#wait 3 seconds
 	time.sleep(3)
 
 
 	pic_num = int(STARTING_NUM)
 	starting_num = pic_num
 
+	#threads for resizing photos to 800x600
 	convert_threads = []
 	small_thumb_threads = []
 
@@ -186,7 +175,6 @@ def runPhotoBooth():
 	filethumbs = []
 	counter = 0
 	#while(pic_num < 5):
-	start_taking_pictures = time.time()
 	#hide display some how?
 	#display.clearWindow()
 	#display.hideWindow()
@@ -204,7 +192,6 @@ def runPhotoBooth():
 		#displayMessage("Taking photo " + str(pic_num) + " out of 4")
 		t1 = threading.Thread(target=takePhoto, args=[filename])
 
-		now = time.time()
 		#start countdown thread
 		gpio_handler.countdownThread()
 		t1.start()
@@ -212,7 +199,6 @@ def runPhotoBooth():
 		display.clearWindow()
 		t1.join()
 		#takePhoto(filename)
-		done = time.time()
 		#t1.start()
 
 		display.clearWindow()
@@ -242,24 +228,15 @@ def runPhotoBooth():
 	#bring display back?
 	#my_globals.content_windwo = my_globals.initWindow()
 
-	end_taking_pictures = time.time()
 
 	STARTING_NUM = str(pic_num)
 
 	display.displayEntertainment()
 	#entertain user...
-	start_montage_time = time.time()
 	wait_threads_time = makePhotoBoothPicture(starting_num, filenames, filethumbs, convert_threads)
-	end_montage_time = time.time()
 	display.clearWindow()
 
 	#display photo booth picture to user
-
-
-	#print("It took " + str(wait_threads_time) + " seconds to wait for the threads to complete")
-	#print("It took " + str(end_montage_time - start_time) + " seconds to complete everything")
-	#print("It took " + str(end_taking_pictures - start_taking_pictures) + " seconds to complete taking the pictures")
-	#print("It took " + str(end_montage_time - start_montage_time) + " seconds to for the user to wait for pictures to be montaged")
 
 	display.displayMessage("Here is the result! Press the button if you would like a redo!", True)
 	#show picture to user
