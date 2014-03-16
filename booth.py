@@ -48,20 +48,7 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 
-#check all the image files in the image file directory
-#this is for determining where to start picture numbering so we don't overwrite pictures already taken
-img_files = []
-os.chdir(my_globals.PBOOTH_DIR)
-for files in os.listdir("."):
-	if(file == "out.jpg" or files == "complete.jpg" or files == "bottom_300dpi.jpg"):
-		continue
 
-	img_files.append(files)
-	#print files
-
-#print img_files
-
-img_files = sorted(img_files)
 
 '''
 montage = "montage "
@@ -104,15 +91,7 @@ def printPicture(number):
 	imagemagick.cmd_line(command)
 
 
-#determine starting file number to use
-#check amount of pictures already taken
-#increment by 1
-if(len(img_files) > 0):
-	#pictures exist, starting number is num_pics+1
-	STARTING_NUM = str(len(img_files) + 1)
-else:
-	#no pictures, starting number is at beginnign -- '1'
-	STARTING_NUM = "1"
+
 
 
 #function to ask user to press button to begin
@@ -151,8 +130,6 @@ def runPhotoBooth():
 	#clear content space to work wirth
 	display.clearWindow()
 
-	#need this global declaration or else references won't work right
-	global STARTING_NUM
 	#need name of photo set that dictates beginning of photo filenames
 	name = "photobooth"
 
@@ -164,7 +141,7 @@ def runPhotoBooth():
 	time.sleep(3)
 
 
-	pic_num = int(STARTING_NUM)
+	pic_num = int(my_globals.STARTING_PIC_NUM)
 	starting_num = pic_num
 
 	#threads for resizing photos to 800x600
@@ -228,8 +205,8 @@ def runPhotoBooth():
 	#bring display back?
 	#my_globals.content_windwo = my_globals.initWindow()
 
-
-	STARTING_NUM = str(pic_num)
+	#update starting pic num in my_globals to new value
+	my_globals.STARTING_PIC_NUM = str(pic_num)
 
 	display.displayEntertainment()
 	#entertain user...
