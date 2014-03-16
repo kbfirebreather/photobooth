@@ -1,12 +1,3 @@
-import re #regex dependency
-import smtplib #sending email dependency
-import sys
-import threading
-import time
-import subprocess #for command line
-import os
-
-
 '''******************************************
 ink_levels.py 
 
@@ -15,6 +6,15 @@ ink_levels.py
 
 
 ******************************************'''
+
+import re #regex dependency
+import smtplib #sending email dependency
+import sys
+import threading
+import time
+import subprocess #for command line
+import os
+
 
 #variable main thread will change to TRUE if ink_levels thread is supposed to stop and exit
 killThread = False

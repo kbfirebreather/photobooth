@@ -1,11 +1,3 @@
-import os
-import random
-import threading
-import time
-
-import my_globals
-
-
 '''******************************************
 imagemagick.py 
 
@@ -16,6 +8,13 @@ imagemagick.py
 
 
 ******************************************'''
+
+import os
+import random
+import threading
+import time
+
+import my_globals
 
 #root directory for photos
 #dirPrefix = "/home/pi/python/photos/"

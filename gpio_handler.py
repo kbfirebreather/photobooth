@@ -1,11 +1,3 @@
-import RPi.GPIO as GPIO
-import os
-import sys
-import time
-import threading
-
-
-
 '''******************************************
 gpio_handler.py 
 
@@ -18,7 +10,11 @@ gpio_handler.py
 
 ******************************************'''
 
-
+import RPi.GPIO as GPIO
+import os
+import sys
+import time
+import threading
 
 
 def exit():

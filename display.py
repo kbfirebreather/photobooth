@@ -1,12 +1,3 @@
-import time
-import pygame
-import os
-from PIL import Image
-
-import my_globals
-import imagemagick
-
-
 '''******************************************
 display.py 
 
@@ -16,6 +7,14 @@ display.py
 
 
 ******************************************'''
+
+import time
+import pygame
+import os
+from PIL import Image
+
+import my_globals
+import imagemagick
 
 
 def clearWindow():

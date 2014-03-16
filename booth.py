@@ -1,3 +1,11 @@
+'''******************************************
+booth.py 
+
+-Main python program that hooks everything together
+
+
+******************************************'''
+
 import sys
 import os
 import pygame
@@ -19,14 +27,6 @@ import imagemagick
 import gpio_handler
 import ink_levels
 
-
-'''******************************************
-booth.py 
-
--Main python program that hooks everything together
-
-
-******************************************'''
 
 #create thread for checking ink levels
 thread_ink_levels = threading.Thread(target=ink_levels.checkInkLevelThread, args=[])

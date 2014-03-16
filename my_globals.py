@@ -1,6 +1,3 @@
-import pygame
-import os
-
 '''******************************************
 my_globals.py 
 
@@ -13,6 +10,8 @@ my_globals.py
 
 ******************************************'''
 
+import pygame
+import os
 
 #directory for photo booth images
 PBOOTH_DIR = "/home/pi/photobooth/images/"
