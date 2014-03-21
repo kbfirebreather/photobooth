@@ -27,6 +27,8 @@ import imagemagick
 import gpio_handler
 import ink_levels
 
+PRINT_PICTURES = False
+
 
 #create thread for checking ink levels
 thread_ink_levels = threading.Thread(target=ink_levels.checkInkLevelThread, args=[])
@@ -50,42 +52,12 @@ signal.signal(signal.SIGINT, signal_handler)
 
 
 
-'''
-montage = "montage "
-for x in range(0, len(img_files)):
-	string = "epeg -m 107,128 -q 100 " + img_files[x] + " -q 100 " + my_globals.PBOOTH_THUMBS + "small_thumb_" + img_files[x]
-	#print(string)
-	#os.system(str)
-	montage = montage + my_globals.PBOOTH_DIR + img_files[x] + " -resize"
-
-#print img_files
-#verify enough files for this to happen
-os.chdir(my_globals.PBOOTH_THUMBS)
-counter = 0
-
-rows = 8
-cols = 9
-
-montage = "montage -geometry +1+1 -tile " + str(cols) + "x" + str(rows) + " -background '#0000FF' -alpha Opaque "
-num_pics = 0;
-for files in os.listdir("."):
-	montage = montage + my_globals.PBOOTH_THUMBS + files + " "
-	counter += 1
-	num_pics += 1
-	if(counter > cols*rows):
-		print("counter > " + str(cols*rows))
-		break;
-
-montage = montage + " big_preview.jpg"
-print(montage)
-
-if(num_pics > 0):
-	os.system(montage)
-
-'''
-
 #function to send picture to printer
 def printPicture(number):
+	#temporary variable check so we don't print accidentally
+	if(not PRINT_PICTURES):
+		return False
+
 	file = "/home/pi/photobooth/sets/complete_" + number + ".jpg"
 	command = "lpr " + file
 	imagemagick.cmd_line(command)
@@ -208,9 +180,11 @@ def runPhotoBooth():
 	#update starting pic num in my_globals to new value
 	my_globals.STARTING_PIC_NUM = str(pic_num)
 
-	display.displayEntertainment()
 	#entertain user...
+	display.displayEntertainment()
+	
 	wait_threads_time = makePhotoBoothPicture(starting_num, filenames, filethumbs, convert_threads)
+	
 	display.clearWindow()
 
 	#display photo booth picture to user
