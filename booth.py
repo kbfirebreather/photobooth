@@ -34,7 +34,8 @@ PRINT_PICTURES = False
 thread_ink_levels = threading.Thread(target=ink_levels.checkInkLevelThread, args=[])
 print("Starting ink level checking thread...")
 #start ink level checking thread
-thread_ink_levels.start()
+#######################################################################################thread_ink_levels.start()
+
 
 #setup signal handler to catch ctrl+c detection and exit cleanly
 def signal_handler(signal, frame):
@@ -200,121 +201,31 @@ def runPhotoBooth():
 	time.sleep(7)
 
 
+def mainLoop():
+	#fps = 30
+	#clock = pygame.time.Clock()
+	while True:
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+
+		#pygame.display.update()
+		#clock.tick(fps)
+
+		if(gpio_handler.isButtonPressed()):
+			#run this in a thread
+			runPhotoBooth()
+			#photobooth finished, display request to user to hit button to begin again
+			displayRequestButtonWindow()
 
 
-
-#display request to user to hit buton
-displayRequestButtonWindow()
-#imagemagick.generate_preview()
-
-#main loop
-#time1 = time.time()
-#5 minutes (60 seconds/  min * 5 minutes)
-#update_delay = 60*5
-#update_delay = 60*1 #1 minute
-
-fps = 30
-clock = pygame.time.Clock()
-while True:
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			pygame.quit()
-	#time2 = time.time()
-
-	#update display every x minutes
-	#check if we reached time
-	'''
-	if((time2 - time1) > update_delay):
-		print("we reached delay, update display")
-		#reset time stamp for checking
-		time1 = time.time()
-		#display same message to user
-		displayRequestButtonWindow()
-	'''
-
-	pygame.display.update()
-	clock.tick(fps)
-
-
-	if(gpio_handler.isButtonPressed()):
-		time1 = time.time()
-		#run this in a thread
-		runPhotoBooth()
-		displayRequestButtonWindow()
-
-
-################### DOESN'T GET PAST HERE
-
-
-
-
-
-# doesn't stop running
-# wait for user to press button and then take action
-counter = 0
-counter2 = 0
-t1 = threading.Thread()
-t1_running = False
-#while True:
-while (counter <= 3):
-	if(isButtonPressed() == False and counter < 3):
-		counter = counter+1
-		continue;
-	else:
-		counter = 0
-		counter2 += 1
-		#counter = counter+1
-		print("Button pushed, let's take some pictures yo")
-		#do it
-		while(t1.isAlive()):
-			print("waiting for t1 thread to finish")
-			t1.join(.5)
-
-		runPhotoBooth()
-		t1 = threading.Thread(target=imagemagick.generate_preview, args=[])
-		#need a better timing for this
-		#t1.start()
-		displayRequestButtonWindow()
-
-	if(counter2 > 10):
-		print("finished 10 sequence")
-		break;
-
-	time.sleep(1)
-pygame.display.quit()
-sys.exit(0)
-#subprocess.call("raspistill -fp -op 254 -t 3000 -o image.jpg", shell=True)
-
-
-
-
-
-
-
-
-
-
-'''
-
-
-#display request to user to hit buton
-displayRequestButtonWindow()
-
-#main loop
-# doesn't stop running
-# wait for user to press button and then take action
-counter = 0
-#while True:
-while (counter <= 3):
-	if(isButtonPressed() == False and counter < 3):
-		counter = counter+1
-		continue;
-	else:
-		#counter = 0
-		counter = counter+1
-		print("Button pushed, let's take some pictures yo")
-		#do it
-		runPhotoBooth()
-
-	time.sleep(1)
-'''
+if __name__ == "__main__":
+	#verify we have printer access
+	while(ink_levels.checkInkLevel() == False):
+		display.displayContentText("Unable to access printer. Please toggle printer power.", True)
+		time.sleep(1)
+	#display request to user to hit buton
+	displayRequestButtonWindow()
+	#run indefinite main loop
+	mainLoop()
+	
