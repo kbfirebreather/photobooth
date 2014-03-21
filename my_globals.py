@@ -13,12 +13,20 @@ my_globals.py
 import pygame
 import os
 import sys
+import time
+import glob #for finding files in directory
 
 #directory for photo booth images
 PBOOTH_DIR = "/home/pi/photobooth/images/"
 PBOOTH_SETS = "/home/pi/photobooth/sets/"
 PBOOTH_THUMBS = "/home/pi/photobooth/thumbs/"
 PBOOTH_BOTTOM = "/home/pi/photobooth/"
+PBOOTH_COLLAGES = "/home/pi/photobooth/collages/"
+
+#collage usage variables
+COLLAGE_PICTURES = glob.glob(PBOOTH_COLLAGES + "*.jpg") #list of images in collages directory
+COLLAGE_ITERATOR_MAX = len(COLLAGE_PICTURES) #maximum limit for COLLAGE_PICTURES list
+
 
 
 #initialize pygame for graphics
@@ -35,7 +43,6 @@ screenWidth = screenHeight
 
 #starting number for pictures taken by camera
 STARTING_PIC_NUM = "1"
-
 
 def initWindow(width = int(screenWidth), height = int(screenHeight)):
 	#diffWidth = screenWidth - screenHeight
@@ -57,7 +64,7 @@ content_window = initWindow()
 message_height = 125
 #content area height in content window
 content_height = screenHeight - message_height
-print("Availble content height: " + str(content_height))
+#print("Availble content height: " + str(content_height))
 
 #backround color for content window
 currentBgColor = (255, 255, 255)
@@ -74,4 +81,5 @@ img_files = os.listdir(PBOOTH_DIR)
 if(len(img_files) > 0):
 	STARTING_PIC_NUM = str(len(img_files) + 1)
 
-sys.exit(0)
+
+	
