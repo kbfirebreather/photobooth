@@ -25,15 +25,24 @@ def exit():
 #BOARD are the stupid numbers
 GPIO.setmode(GPIO.BCM)
 
+#pins used to display 3,2,1
+GPIO_3_2_1 = 25
+GPIO_3_2 = 2
+GPIO_3_1 = 4
+GPIO_2 = 3
+
+#pin used for button detection
+GPIO_BTN = 17
+
 #configure gpio pins we'll be using
 #initialize to LOW
-GPIO.setup(25, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(24, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(23, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(22, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(GPIO_3_2_1, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(GPIO_3_2, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(GPIO_3_1, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(GPIO_2, GPIO.OUT, initial=GPIO.LOW)
 
 #for button press
-GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(GPIO_BTN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
 
@@ -44,9 +53,19 @@ GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 def isButtonPressed():
 	#wait for falling edge on GPIO 
 	#print("Waiting for falling edge")
-	#GPIO.wait_for_edge(17, GPIO.FALLING)
+	#GPIO.wait_for_edge(GPIO_BTN, GPIO.FALLING)
 	#print("Falling edge detected, returning true")
-	return GPIO.input(17) == False
+	try:
+		GPIO.wait_for_edge(GPIO_BTN, GPIO.FALLING)
+		print('falling detected')
+		return True
+	except KeyboardInterrupt:
+		GPIO.cleanup()
+	GPIO.cleanup()
+	#try failed
+	return False
+
+	return GPIO.input(GPIO_BTN) == False
 	return True
 
 #quick function for setting GPIO state
@@ -60,46 +79,46 @@ def displayCountdown():
 	#lets cound down from 3,2,1....
 	#let's display 3!
 	#first set all LOW
-	setGPIO(25, False)
-	setGPIO(24, False)
-	setGPIO(23, False)
-	setGPIO(22, False)
+	setGPIO(GPIO_3_2_1, False)
+	setGPIO(GPIO_3_2, False)
+	setGPIO(GPIO_3_1, False)
+	setGPIO(GPIO_2, False)
 
 	#display 3!
 	#print("display 3")
-	setGPIO(25, True)
-	setGPIO(24, True)
-	setGPIO(22, True)
+	GPIO.output(GPIO_3_2_1, True)
+	GPIO.output(GPIO_3_2, True)
+	GPIO.output(GPIO_3_1, True)
 
 	#wait 1 second before displaying next number!
 	time.sleep(1)
 
 	#display 2!
 	#remove segment for #3 that's not used for #2
-	setGPIO(24, False)
+	GPIO.output(GPIO_3_1, False)
 	#display segment used for #2
 	#print("display 2")
 	#setGPIO(25, True)
-	setGPIO(23, True)
+	GPIO.output(GPIO_2, True)
 
 	#wait 1 second before displaying next number!
 	time.sleep(1)
 
 	#display 1!
 	#remove segments for #2 that's not used in #1
-	setGPIO(23, False)
-	setGPIO(22, False)
+	GPIO.output(GPIO_3_2, False)
+	GPIO.output(GPIO_2, False)
 
 	#display segment used for #1!
 	#print("display 1")
-	setGPIO(24, True)
+	GPIO.output(GPIO_3_1, True)
 
 	#wait 1 second!
 	time.sleep(1)
 
-	#remove all led displays
-	setGPIO(24, False)
-	setGPIO(25, False)
+	#remove remaining led displays
+	GPIO.output(GPIO_3_1, False)
+	GPIO.output(GPIO_3_2_1, False)
 
 #function called from booth.py to execute countdown in a thread
 def countdownThread():
