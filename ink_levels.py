@@ -51,7 +51,7 @@ noaccess = re.compile("Could not access")
 
 def saveInkLevels():
 	#thestr = subprocess.check_output("ink -p usb", shell=True)#os.system("ink -p usb")# > " + ink_level_file_path)
-	os.system("ink -p usb > " + ink_level_file_path)
+	os.system("sudo ink -p usb > " + ink_level_file_path)
 	#print(thestr)
 	print("done")
 
