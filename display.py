@@ -16,6 +16,16 @@ from PIL import Image
 import my_globals
 import imagemagick
 
+#local collage variables
+USING_COLLAGES = False #set to true if images exist in collages directory
+COLLAGE_ITERATOR = 0 #counter for COLLAGE_PICTURES usage#verify image files exist in collages directory
+#verify collage pictures exist
+if(len(my_globals.COLLAGE_PICTURES) > 0):
+	global USING_COLLAGES #idk why the fuck this is needed
+	print("using collages: " + str(len(my_globals.COLLAGE_PICTURES)))
+	#set using_collages variable to true
+	USING_COLLAGES = True
+
 
 def clearWindow():
 	my_globals.content_window.fill((255,255,255))
@@ -150,19 +160,36 @@ def displayContentText(content_text, clearScreen = False):
 def displayEntertainment():
 	clearWindow()
 	displayMessage("Compiling pictures into photo strip...")
-	
-	#file = my_globals.PBOOTH_THUMBS + "montage.jpg"
-	file = my_globals.PBOOTH_BOTTOM + "big_preview.jpg"
-	#don't show preview if big_preview.jpg doesn't exist
-	if(os.path.isfile(file) == False):
-		return False
-	image = pygame.image.load(file)
-	#image = pygame.transform.scale(image, (373,560))
-	displayContentImage(image)
-	#blitWindow(image, False, getCenter(my_globals.screenWidth, my_globals.screenHeight+200, image))
-	#window_photobooth.blit(image, (0,0))
-	#pygame.display.update()
-	#time.sleep(5)
+	#verify we have entertainment ot display
+	print("USING COLLAGES:::: ")
+	print(USING_COLLAGES)
+
+	global COLLAGE_ITERATOR #otherwise get reference before assignment error
+	global USING_COLLAGES #otherwise always is false
+
+	if(USING_COLLAGES):
+		print("using collages")
+		file = my_globals.COLLAGE_PICTURES[COLLAGE_ITERATOR]
+		print("file: " + file)
+		#increment iterator
+		COLLAGE_ITERATOR += 1
+		#verify iterator didn't go past limit
+		if(COLLAGE_ITERATOR >= my_globals.COLLAGE_ITERATOR_MAX):
+			print("collage iterator set to 0 because iterator got to: " + str(COLLAGE_ITERATOR) + " which is greater than " + str(my_globals.COLLAGE_ITERATOR_MAX))
+			#reset iterator if past max
+			COLLAGE_ITERATOR = 0
+
+		#verify file exists before displaying it to user
+		if(os.path.isfile(file) == False):
+			print("collage doesn't exist")
+			#file doesn't exist, return
+			return False
+
+		#load image
+		image = pygame.image.load(file)
+		#display to user
+		print("display to user")
+		displayContentImage(image)
 	
 
 
