@@ -120,7 +120,8 @@ def checkInkLevel():
 			#close opened file
 			f.close()
 			#leave checkInkLevel() function...can't do anything yet
-			return
+			#return false so when system starts it can verify it has usb access
+			return False
 
 	#if we have < 3 ink levels, then we probably didn't have access to USB and couldn't get ink levels		
 	if(foundInkLevels < 3):
@@ -141,6 +142,7 @@ def checkInkLevel():
 
 	#close opened file
 	f.close()
+	return True
 
 #function for thread to execute constant ink level monitoring
 def checkInkLevelThread():
