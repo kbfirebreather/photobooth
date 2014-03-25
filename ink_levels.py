@@ -14,6 +14,7 @@ import threading
 import time
 import subprocess #for command line
 import os
+import my_globals
 
 
 #variable main thread will change to TRUE if ink_levels thread is supposed to stop and exit
@@ -42,6 +43,10 @@ receivers = map(lambda s: s.strip(), receivers)
 ink_level_file_path = "/home/pi/inklevels.txt"
 ink_level_file_path = "./inklevels.txt"
 
+#variable to set when users are notified so we don't notify them every 25 seconds
+#set to true when users are notified
+#set back to false when ink has been replaced
+notified_low_levels = False
 
 #regex patterns for ink levels / noaccess
 black = re.compile("Black:")
@@ -79,6 +84,8 @@ def notifyUsers(ink_black, ink_color, ink_photo):
 
 #function to check status of ink levels on the printer
 def checkInkLevel():
+	#declare this as global, otherwise can't use it
+	global notified_low_levels
 	#save current ink levels to a file
 	saveInkLevels()
 	#open saved file for readings
@@ -137,8 +144,16 @@ def checkInkLevel():
 
 	#test ink levels
 	if(percent_black < 25 or percent_color < 25 or percent_photo < 25):
-		#nofity users if ink levels are lower than required amount
-		notifyUsers(percent_black, percent_color, percent_photo)
+		#make sure they werne't notified already
+		if(notified_low_levels == False):
+			#set variable to indicate users have been notified
+			notified_low_levels = True
+			#nofity users if ink levels are lower than required amount
+			notifyUsers(percent_black, percent_color, percent_photo)
+	else:
+		#ink levels are fine
+		#reset users notified variable so users will be notified next time ink is low
+		notified_low_levels = False
 
 	#close opened file
 	f.close()
@@ -151,29 +166,13 @@ def checkInkLevelThread():
 		#test to see if main thread notified this thread to exit
 		if(killThread):
 			return
-		#check ink level
-		checkInkLevel()
+		my_globals.thread_lock.acquire()
+		try:
+			#check ink level
+			checkInkLevel()
+		finally:
+			#release lock
+			my_globals.thread_lock.release()
+
 		#sleep 25 seconds until checking ink levels next
 		time.sleep(25)
-
-
-'''
-#used to test ink_levels.py standalone instead of integrated
-
-saveInkLevels()
-checkInkLevel()
-sys.exit(0)
-
-t1 = threading.Thread(target=checkInkLevelThread, args=[])
-t1.start()
-i =0
-while(i < 10):
-	i = i + 1
-	time.sleep(1)
-killThread = True
-print("Thread told to kill")
-t1.join()
-sys.exit(0)
-
-
-'''

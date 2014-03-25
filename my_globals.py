@@ -15,6 +15,7 @@ import os
 import sys
 import time
 import glob #for finding files in directory
+import threading #for locking
 
 #directory for photo booth images
 PBOOTH_DIR = "/home/pi/photobooth/images/"
@@ -27,7 +28,8 @@ PBOOTH_COLLAGES = "/home/pi/photobooth/collages/"
 COLLAGE_PICTURES = glob.glob(PBOOTH_COLLAGES + "*.jpg") #list of images in collages directory
 COLLAGE_ITERATOR_MAX = len(COLLAGE_PICTURES) #maximum limit for COLLAGE_PICTURES list
 
-
+#lock for use with ink level checking thread and blocking gpio button detection
+thread_lock = threading.Lock()
 
 #initialize pygame for graphics
 pygame.init()

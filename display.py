@@ -21,7 +21,7 @@ USING_COLLAGES = False #set to true if images exist in collages directory
 COLLAGE_ITERATOR = 0 #counter for COLLAGE_PICTURES usage#verify image files exist in collages directory
 #verify collage pictures exist
 if(len(my_globals.COLLAGE_PICTURES) > 0):
-	global USING_COLLAGES #idk why the fuck this is needed
+	global USING_COLLAGES #declare global or can't modify value
 	print("using collages: " + str(len(my_globals.COLLAGE_PICTURES)))
 	#set using_collages variable to true
 	USING_COLLAGES = True
@@ -29,7 +29,6 @@ if(len(my_globals.COLLAGE_PICTURES) > 0):
 
 def clearWindow():
 	my_globals.content_window.fill((255,255,255))
-	#my_globals.content_window.fill((0,0,0))
 	pygame.display.update()
 
 def hideWindow():
@@ -51,14 +50,18 @@ def blitWindow(label, center = True, pos = (0, 0)):
 	my_globals.content_window.blit(label, textpos)
 	pygame.display.update()
 
+
+#function to ask user to press button to begin
+def requestButtonToBegin():
+	#request button window text string
+	theText = "Press button to begin photo shoot!"
+	displayContentText(theText, True)
+
 def getCenter(width, height, object):
 	textpos = object.get_rect(centerx=width/2, centery=height/2)
-	print(textpos)
-	print(width)
-	print(height)
 	return textpos
 
-#get maximum font size?
+#get maximum font sizem for width/height constraint
 def getMaxCharSize(width, height, text = '3'):
 	#90% of width
 	#width = width*0.9
@@ -81,46 +84,6 @@ def getMaxCharSize(width, height, text = '3'):
 	print("size: " + str(size))
 	return size
 
-#display 3,2,1 countdown in top left corner of screen
-def displayCountDown(countDownText = "Taking photo in "):
-	#close request button push window
-	#pygame.display.quit()
-	#fill window white background
-	my_globals.content_window.fill((255,255,255))
-	#update window so user sees white background
-	pygame.display.update()
-
-	#request button window text string
-	theText = countDownText + " 1";
-	size = getMaxCharSize(my_globals.screenWidth, my_globals.message_height, theText)
-	#generate font for countdown in window
-	myfont = pygame.font.Font(None, size)
-	label = myfont.render(theText, 1, (0,0,0))
-	#show countdown from 3 to 1 in this loop
-	for i in range(0, 3):
-		clearWindow()
-		countDown = 3-1*i
-		#get time before clearing screen and displaying stuff
-		time_before_display = time.time()
-		displayContentText(str(countDown))
-		displayMessage(countDownText)
-		#displayMessage(str(countDown))
-		#time after done updating display
-		time_after_display = time.time()
-		#calculate remaining time in "1 second" to wait until we go to the next second
-		sleepfor = 1-(time_after_display - time_before_display)
-		if(sleepfor < 0):
-			sleepfor = 0;
-
-		print("SLEEP: " + str(sleepfor))
-		print(time_after_display)
-		print(time_before_display)
-		#blitWindow(label)
-		time.sleep(sleepfor)
-		clearWindow()
-
-	print("Finished in " + str(time.time() - time_before_display))
-
 #display @str message to user
 def displayMessage(message_text, clearScreen = False):
 	if(clearScreen):
@@ -132,22 +95,16 @@ def displayMessage(message_text, clearScreen = False):
 	label = myfont.render(message_text, 1, (0,0,0))
 	blitWindow(label, False, getCenter(my_globals.screenWidth, my_globals.message_height, label))
 
+#function to display image in content area
 def displayContentImage(content_obj, clearScreen = False):
 	if(clearScreen):
 		clearWindow()
-	print("size:::")
-	print(content_obj.get_size())
-	print(content_obj.get_width())
-	print(content_obj.get_height())
 
 	x = int((my_globals.screenWidth - content_obj.get_width())/2)
 	y = my_globals.message_height + int((my_globals.content_height - content_obj.get_height())/2)
-	#print(content_obj.size)
-	#size = getMaxCharSize(my_globals.screenWidth, my_globals.content_height, content_obj)
-	#myfont = pygame.font.Font(None, size)
-	#label = myfont.render(content_obj, 1, (0,0,0))
 	blitWindow(content_obj, False, (x, y))
 
+#function to display text in content area
 def displayContentText(content_text, clearScreen = False):
 	if(clearScreen):
 		clearWindow()
@@ -157,12 +114,13 @@ def displayContentText(content_text, clearScreen = False):
 	label = myfont.render(content_text, 1, (0,0,0))
 	blitWindow(label, False, getCenter(my_globals.screenWidth, my_globals.screenHeight + my_globals.message_height, label))
 
+
+#function to inform user the photo strip is being generated
+#displays image collage to user so they have something to look at while waiting
 def displayEntertainment():
 	clearWindow()
 	displayMessage("Compiling pictures into photo strip...")
 	#verify we have entertainment ot display
-	print("USING COLLAGES:::: ")
-	print(USING_COLLAGES)
 
 	global COLLAGE_ITERATOR #otherwise get reference before assignment error
 	global USING_COLLAGES #otherwise always is false
@@ -193,26 +151,22 @@ def displayEntertainment():
 	
 
 
-
+#take @id and display associated picture in content area
+#scale picture width/height to fit constraints
 def displayPhotoBoothPicture(id = ""):
+	#prepare file name
 	file = my_globals.PBOOTH_SETS + "complete_" + id + ".jpg"
-	#set starting point for next window to 0,0 (top left corner of screen)
-	
-
+	#load image
 	image = pygame.image.load(file)
+	#get dimensions of image
 	w,h = pygame.Surface.get_size(image)
+	#convert width/height to floats
 	w = float(w)
 	h = float(h)
+	#calculate width of image that will fit in content area
 	newWidth = float(((w / h) * my_globals.content_height))
-	print("stuff here")
-	print(w)
-	print(h)
-	print(newWidth)
-	print(str(float(w/h)))
-	print("global height: " + str(my_globals.content_height))
+	#scale image to fit content area width/height
 	image = pygame.transform.scale(image, (int(newWidth), my_globals.content_height))
+	#display image to user
 	displayContentImage(image)
-	#blitWindow(image, False, getCenter(my_globals.screenWidth, my_globals.screenHeight+200, image))
-	#window_photobooth.blit(image, (0,0))
-	#pygame.display.update()
 	

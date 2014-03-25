@@ -27,14 +27,14 @@ import imagemagick
 import gpio_handler
 import ink_levels
 
-PRINT_PICTURES = False
+PRINT_PICTURES = True
 
 
 #create thread for checking ink levels
 thread_ink_levels = threading.Thread(target=ink_levels.checkInkLevelThread, args=[])
 print("Starting ink level checking thread...")
 #start ink level checking thread
-#######################################################################################thread_ink_levels.start()
+thread_ink_levels.start()
 
 
 #setup signal handler to catch ctrl+c detection and exit cleanly
@@ -66,15 +66,6 @@ def printPicture(number):
 
 
 
-
-#function to ask user to press button to begin
-#should this be moved to display.py?
-def displayRequestButtonWindow():
-	#request button window text string
-	theText = "Press button to begin photo shoot!"
-	display.displayContentText(theText, True)
-
-
 #function Take photo and save to @filename
 def takePhoto(filename):
 	#append filename to global photobooth image directory
@@ -83,17 +74,6 @@ def takePhoto(filename):
 	cmdline = "raspistill -fp -t 3000 -o " + filename
 	#send command to command line
 	os.system(cmdline)
-
-
-
-#use image magick to create photobooth picture to print out
-#should this me moved to imagemagick.py?
-def makePhotoBoothPicture(startingPictureNumber, filenames, filethumbs, convert_threads):
-
-	#images = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg']
-	#random.shuffle(images)
-	print("image magick time")
-	print(imagemagick.montage(filenames, filethumbs, convert_threads, str(startingPictureNumber)))
 
 
 
@@ -124,10 +104,6 @@ def runPhotoBooth():
 	filenames = []
 	filethumbs = []
 	counter = 0
-	#while(pic_num < 5):
-	#hide display some how?
-	#display.clearWindow()
-	#display.hideWindow()
 
 	#display.displayContentText("Picture " + str(counter+1), True)
 	while(counter <= 3):#3):
@@ -152,7 +128,6 @@ def runPhotoBooth():
 		#t1.start()
 
 		display.clearWindow()
-		#display.displayCountDown("Taking photo " + str(counter + 1))
 		print("display countdown to 7 segment LED")
 		#wait for photo taking thread to complete
 		#t1.join()
@@ -184,20 +159,19 @@ def runPhotoBooth():
 	#entertain user...
 	display.displayEntertainment()
 	
-	wait_threads_time = makePhotoBoothPicture(starting_num, filenames, filethumbs, convert_threads)
+	#stitch all pictures together to make the photobooth strip
+	imagemagick.montage(filenames, filethumbs, convert_threads, str(starting_num))
 	
+	#clear window
 	display.clearWindow()
 
-	#display photo booth picture to user
-
-	display.displayMessage("Here is the result! Press the button if you would like a redo!", True)
-	#show picture to user
-	display.displayPhotoBoothPicture(str(starting_num))
-	#for 5 seconds
-	time.sleep(5)
+	#send picture data to printer
 	printPicture(str(starting_num))
-	display.displayMessage("Printing picture! Please allow a minute or two for the print to begin!", True)
+	#inform user we are displaying the picture and bring to attention the time it takes to print
+	display.displayMessage("Here it is! Sending picture to printer. Please allow a minute or two for the print to begin!", True)
+	#display booth picture to user
 	display.displayPhotoBoothPicture(str(starting_num))
+	#display picture for 7 seconds before requesting button input to being photobooth sequence
 	time.sleep(7)
 
 
@@ -216,7 +190,7 @@ def mainLoop():
 			#run this in a thread
 			runPhotoBooth()
 			#photobooth finished, display request to user to hit button to begin again
-			displayRequestButtonWindow()
+			display.requestButtonToBegin()
 
 
 if __name__ == "__main__":
@@ -225,7 +199,6 @@ if __name__ == "__main__":
 		display.displayContentText("Unable to access printer. Please toggle printer power.", True)
 		time.sleep(1)
 	#display request to user to hit buton
-	displayRequestButtonWindow()
+	display.requestButtonToBegin()
 	#run indefinite main loop
 	mainLoop()
-	
