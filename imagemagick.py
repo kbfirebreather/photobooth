@@ -120,7 +120,7 @@ def montage(images, thumbs, threads, id = ""):
 	'''
 
 	#bottom of the complete file
-	bottom_file = my_globals.PBOOTH_BOTTOM + "middle.jpg"
+	bottom_file = my_globals.PBOOTH_BOTTOM + "banner.jpg"
 	#stitch together the 2x3 and the bottom_file
 	montage2 = "montage " + my_globals.PBOOTH_SETS + "complete_" + id + ".jpg " + bottom_file + " -tile 1x2 -geometry +0+0 " + my_globals.PBOOTH_SETS + "complete_" + id + ".jpg "
 	#make final photo booth picture product to be printed
